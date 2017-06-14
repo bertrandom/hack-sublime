@@ -18,8 +18,6 @@ class HackClient(threading.Thread):
         self.ssh_folder = self.settings.get("hack_ssh_folder")
         self.client = None
 
-        self.window.run_command("show_panel", {"panel": "output.textarea"})
-
     def run(self):
         self.client = self.startClient()
 
@@ -61,7 +59,11 @@ class HackClient(threading.Thread):
 
     def updateOutput(self):
         output = self.client.stdout.read().decode('utf-8')
-        insertText(self.output_view, output)
+        if output != "No errors!\n":
+            self.window.run_command("show_panel", {"panel": "output.textarea"})
+            insertText(self.output_view, output)
+        else:
+            self.window.run_command("hide_panel", {"panel": "output.textarea"})
 
         self.unmarkAll()
         if len(output) != 0:
